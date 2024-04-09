@@ -1,6 +1,9 @@
 Cenas a explorar:
 - Localização geográfica
 
+Cleanup:
+- Customer name, transformar em nome + education
+
 Ideias:
 - Podemos ter 2 clusterings: um por purchase history, outro por demographics. 
 O cluster final seria juntar estas duas
