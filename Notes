@@ -3,6 +3,7 @@ Cenas a explorar:
 
 Cleanup:
 - Customer name, transformar em nome + education
+- Loyalty card para boolean se tem ou não
 
 Ideias:
 - Podemos ter 2 clusterings: um por purchase history, outro por demographics. 
