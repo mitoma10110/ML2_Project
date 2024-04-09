@@ -4,6 +4,8 @@ Cenas a explorar:
 Cleanup:
 - Customer name, transformar em nome + education
 - Loyalty card para boolean se tem ou não
+- Mostrar nº de N/A em lista com .isna
+- Tratar o hour
 
 Ideias:
 - Podemos ter 2 clusterings: um por purchase history, outro por demographics. 
