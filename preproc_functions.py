@@ -87,6 +87,7 @@ def datetime_converter(df: pd.DataFrame, datetime_cols: list) -> pd.DataFrame:
     return df
 
 def preproc_applier(df:pd.DataFrame, datetime_cols:list=None, gender_col:str=None) -> pd.DataFrame:
+    
     '''
     Function that applies preprocessing functions to a dataframe
     Input:  df (dataframe)
