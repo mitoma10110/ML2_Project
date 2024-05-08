@@ -1,34 +1,39 @@
-import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.offsetbox import OffsetImage, AnnotationBbox
 from scipy.cluster.hierarchy import dendrogram, linkage
-import math
-from PIL import Image
-import urllib
-from sklearn.cluster import KMeans, AgglomerativeClustering
+from shapely.geometry import Point
+import geopandas as gpd
 
-def create_dispersion_list(data, k_limit=20):
-    dispersion = []
-    for k in range(1, k_limit):
-        kmeans = KMeans(n_clusters=k, random_state=0).fit(data)
-        dispersion.append(kmeans.inertia_)
-    return dispersion
 
-def create_agg_clusters(data, linkage='ward', distance_threshold=0, n_clusters=None):
-    agg_clust = AgglomerativeClustering(
-        linkage=linkage, distance_threshold=distance_threshold, n_clusters=n_clusters
-        ).fit(data)
-    return agg_clust
+def plot_population(data):
+    # Assuming cust_info contains latitude and longitude columns for Portugal
+    geometry = [Point(xy) for xy in zip(data['longitude'], data['latitude'])]
+    gdf = gpd.GeoDataFrame(data, geometry=geometry)   
 
-def allocate_clusters(df, data_preprocessed, n_clusters, cluster_type=['KMeans', 'AgglomerativeClustering'], random_state=0, linkage='ward'):
-    if cluster_type=='KMeans':
-        model = KMeans(n_clusters=n_clusters, random_state=random_state).fit(data_preprocessed)
-        df['cluster_kmeans'] = model.predict(data_preprocessed)
-    elif cluster_type=='AgglomerativeClustering':
-        model = AgglomerativeClustering(n_clusters=n_clusters, linkage=linkage).fit(data_preprocessed)
-        df['cluster_hierarchical'] = model.fit_predict(data_preprocessed)
+    # Load low-resolution world map
+    world = gpd.read_file(gpd.datasets.get_path('naturalearth_lowres'))
 
+    # Filter to include only Portugal
+    portugal = world[world['name'] == 'Portugal']
+
+    # Create a plot
+    fig, ax = plt.subplots(figsize=(10, 6))
+
+    # Plot map of Portugal
+    portugal.plot(ax=ax, color='lightblue') 
+
+    # Plot all points in Portugal
+    gdf.plot(ax=ax, marker='o', color='red', markersize=15)
+
+    # Set plot title and labels
+    ax.set_title('Location of Customers in Portugal')
+    ax.set_xlabel('Longitude')
+    ax.set_ylabel('Latitude')
+    ax.set_ylim(38, 40)
+    ax.set_xlim(-9.8, -8)
+    # Show plot
+    plt.show()
 
 # plot funtions for k analysis
 def plot_elbow_graph(dispersion):
