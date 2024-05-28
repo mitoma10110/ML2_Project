@@ -1,3 +1,7 @@
+To-do:
+- Association Rules cluster by cluster
+O cluster está bem feito se lift for alto, com um valor minimo de support
+
 Cenas a explorar:
 - Localização geográfica; definir cidades como cluster manual pq são tão distintas umas das outras
 - Retirar pescadores
