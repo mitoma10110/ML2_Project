@@ -1,4 +1,4 @@
-from sklearn.cluster import KMeans, AgglomerativeClustering
+from sklearn.cluster import KMeans, AgglomerativeClustering, DBSCAN, MeanShift
 
 def create_dispersion_list(data, k_limit=20):
     dispersion = []
@@ -13,10 +13,14 @@ def create_agg_clusters(data, linkage='ward', distance_threshold=0, n_clusters=N
         ).fit(data)
     return agg_clust
 
-def allocate_clusters(df, data_preprocessed, n_clusters, cluster_type=['KMeans', 'AgglomerativeClustering'], random_state=0, linkage='ward'):
-    if cluster_type=='KMeans':
-        model = KMeans(n_clusters=n_clusters, random_state=random_state).fit(data_preprocessed)
-        df['cluster_kmeans'] = model.predict(data_preprocessed)
-    elif cluster_type=='AgglomerativeClustering':
-        model = AgglomerativeClustering(n_clusters=n_clusters, linkage=linkage).fit(data_preprocessed)
-        df['cluster_hierarchical'] = model.fit_predict(data_preprocessed)
+def allocate_clusters_kmeans(df, data_preprocessed, n_clusters=8, random_state=0):
+    model = KMeans(n_clusters=n_clusters, random_state=random_state).fit(data_preprocessed)
+    df['cluster_kmeans'] = model.predict(data_preprocessed)
+
+def allocate_clusters_aggclust(df, data_preprocessed, n_clusters, linkage='ward'):
+    model = AgglomerativeClustering(n_clusters=n_clusters, linkage=linkage).fit(data_preprocessed)
+    df['cluster_hierarchical'] = model.fit_predict(data_preprocessed)
+
+def allocate_clusters_dbscan(df, data_preprocessed, eps=0.5, min_samples=5):
+    model = DBSCAN(eps=eps, min_samples=min_samples)
+    df['cluster_dbscan'] = model.fit_predict(data_preprocessed)
