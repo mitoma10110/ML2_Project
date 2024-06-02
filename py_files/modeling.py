@@ -24,3 +24,7 @@ def allocate_clusters_aggclust(df, data_preprocessed, n_clusters, linkage='ward'
 def allocate_clusters_dbscan(df, data_preprocessed, eps=0.5, min_samples=5):
     model = DBSCAN(eps=eps, min_samples=min_samples)
     df['cluster_dbscan'] = model.fit_predict(data_preprocessed)
+
+def allocate_clusters_meanshift(df, data_preprocessed, bandwidth):
+    model = MeanShift(bandwidth=bandwidth)
+    df['cluster_meanshift'] = model.fit_predict(data_preprocessed)
