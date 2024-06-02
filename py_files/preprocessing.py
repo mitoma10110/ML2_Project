@@ -22,14 +22,14 @@ def cust_info_preproc(df:pd.DataFrame) -> pd.DataFrame:
     numeric_cols = cust_info.select_dtypes(include=[np.number]).columns
     non_numeric_cols = cust_info.select_dtypes(exclude=[np.number]).columns
 
-    # Missing values: KNN Imputation
-    imputer = KNNImputer(n_neighbors=5)
-    cust_info[numeric_cols] = imputer.fit_transform(cust_info[numeric_cols])
-
     # Standardization
     scaler = RobustScaler()
     cust_info[numeric_cols] = scaler.fit_transform(cust_info[numeric_cols])
 
+    # Missing values: KNN Imputation
+    imputer = KNNImputer(n_neighbors=5)
+    cust_info[numeric_cols] = imputer.fit_transform(cust_info[numeric_cols])
+    
     # Combine numeric and non-numeric columns back
     cust_info = pd.concat([cust_info[non_numeric_cols], cust_info[numeric_cols]], axis=1)
 
