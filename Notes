@@ -1,6 +1,19 @@
+To-do:
+- Association Rules cluster by cluster
+O cluster está bem feito se lift for alto, com um valor minimo de support
+
 Cenas a explorar:
-- Localização geográfica
+- Localização geográfica; definir cidades como cluster manual pq são tão distintas umas das outras
+- Retirar pescadores
+
+Cleanup:
+- 
 
 Ideias:
 - Podemos ter 2 clusterings: um por purchase history, outro por demographics. 
 O cluster final seria juntar estas duas
+- Podemos não usar variáveis categóricas para clustering, mas sim para ajudar a analisar quem são as pessoas do cluster
+  - Gender
+  - Loyalty card
+- Leverage (%sales/%individuals) - better raion = better sales from less people
+- 
