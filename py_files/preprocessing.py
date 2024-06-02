@@ -59,11 +59,26 @@ def cust_basket_preproc(df):
     return cust_basket
 
 
-def cust_info_separator(df:pd.DataFrame):
+def modelling_separator(df:pd.DataFrame):
     '''
     Function that separates the variables into variables to use for
     modelling and for interpreting the clusters
     '''
-    modelling = df.select_dtypes(include=[np.number])
-    interpreting = df.select_dtypes(exclude=[np.number])
-    return modelling, interpreting
+    training_vars = ['customer_birthdate', 'kids_home', 'teens_home', 'number_complaints',
+                     'distinct_stores_visited', 'lifetime_spend_groceries', 'lifetime_spend_electronics',
+                     'typical_hour', 'lifetime_spend_vegetables', 'lifetime_spend_nonalcohol_drinks',
+                     'lifetime_spend_alcohol_drinks', 'lifetime_spend_meat', 'lifetime_spend_fish',
+                     'lifetime_spend_hygiene', 'lifetime_spend_videogames', 'lifetime_spend_petfood',
+                     'lifetime_total_distinct_products', 'percentage_of_products_bought_promotion', 'year_first_transaction']
+    training_set = pd.DataFrame
+
+    for var in training_vars:
+        if var in df.columns:
+            training_set[var] = df[var]
+
+    return training_set
+
+def standerdization(df:pd.DataFrame) -> pd.DataFrame:
+    scaler = RobustScaler()
+    scaled = scaler.fit_transform(df)
+    return scaled
