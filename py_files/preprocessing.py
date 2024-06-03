@@ -14,9 +14,15 @@ def cust_info_preproc(df:pd.DataFrame) -> pd.DataFrame:
     # Convert birth date to datetime and extract age
     cust_info['customer_birthdate'] = pd.to_datetime(cust_info['customer_birthdate'])
     cust_info['age'] = cust_info['customer_birthdate'].apply(lambda x: (pd.Timestamp.now() - x).days // 365)
+    cust_info.drop('customer_birthdate', axis=1, inplace=True)
+
+    # Turn gender into a boolean (True if female)
+    cust_info['gender'] = 1 if cust_info['customer_gender'] == 'female' else 0
+    cust_info.drop('customer_gender', axis=1, inplace=True)
 
     # Turn card number into a boolean (True if the person has a card)
     cust_info['loyalty_program'] = cust_info['loyalty_card_number'].notnull()
+    cust_info.drop('loyalty_card_number', axis=1, inplace=True)
 
     # Drop non-numeric columns for imputation
     numeric_cols = cust_info.select_dtypes(include=[np.number]).columns
