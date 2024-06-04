@@ -5,6 +5,24 @@ from sklearn.preprocessing import RobustScaler
 from sklearn.impute import KNNImputer
 product_mapping = pd.read_excel('data\product_mapping.xlsx')
 
+def scaling(df:pd.DataFrame) -> pd.DataFrame:
+    '''
+    Assuming df is numeric
+    '''
+    scaler = RobustScaler()
+    scaled = scaler.fit_transform(df)
+    return scaled
+
+def convert_date_times(df, columns):
+    for col in columns:
+        df[str(col)] = pd.to_datetime(df[str(col)])
+
+
+def imputation(df, numeric_cols):
+    imputer = KNNImputer(n_neighbors=5)
+    df[numeric_cols] = imputer.fit_transform(df[numeric_cols])
+
+
 def cust_info_preproc(df:pd.DataFrame) -> pd.DataFrame:
     '''
     Function that applies preprocessing to the customer info dataset
@@ -12,15 +30,14 @@ def cust_info_preproc(df:pd.DataFrame) -> pd.DataFrame:
     cust_info = deepcopy(df)
 
     # Convert birth date to datetime
-    cust_info['customer_birthdate'] = pd.to_datetime(cust_info['customer_birthdate'])
+    convert_date_times(cust_info, columns=['customer_birthdate'])
 
     # Drop non-numeric columns for imputation
     numeric_cols = cust_info.select_dtypes(include=[np.number]).columns
     non_numeric_cols = cust_info.select_dtypes(exclude=[np.number]).columns
 
-    # Missing values: KNN Imputation
-    imputer = KNNImputer(n_neighbors=5)
-    cust_info[numeric_cols] = imputer.fit_transform(cust_info[numeric_cols])
+    scaling(cust_info, numeric_cols)
+    imputation(cust_info, numeric_cols)
 
     # Combine numeric and non-numeric columns back
     cust_info = pd.concat([cust_info[non_numeric_cols], cust_info[numeric_cols]], axis=1)
@@ -69,11 +86,3 @@ def modelling_separator(df:pd.DataFrame):
             training_set[var] = df[var]
 
     return training_set
-
-def scaling(df:pd.DataFrame) -> pd.DataFrame:
-    '''
-    Assuming df is numeric
-    '''
-    scaler = RobustScaler()
-    scaled = scaler.fit_transform(df)
-    return scaled
