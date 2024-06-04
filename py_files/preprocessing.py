@@ -3,8 +3,7 @@ import numpy as np
 from copy import deepcopy
 from sklearn.preprocessing import RobustScaler
 from sklearn.impute import KNNImputer
-product_mapping = pd.read_excel('data\product_mapping.xlsx')
-from feature_engineering import *
+from py_files.feature_engineering import *
 
 def scaling(df:pd.DataFrame) -> pd.DataFrame:
     '''
@@ -48,7 +47,7 @@ def cust_info_preproc(df:pd.DataFrame) -> pd.DataFrame:
 
     return cust_info
 
-def cust_basket_preproc(df):
+def cust_basket_preproc(df, product_maping):
     '''
     Function that applies preprocessing to the customer basket dataset
     '''
