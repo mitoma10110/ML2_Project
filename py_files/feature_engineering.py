@@ -27,8 +27,11 @@ def custinfo_create_variables(df):
     df['loyalty_program'] = df['loyalty_card_number'].notnull()
     df.drop('loyalty_card_number', axis=1, inplace=True)
 
-    # Apply the function to create a new 'Education' column
+    # Apply the function created above to create a new 'Education' column
     df['education'] = df['customer_name'].apply(extract_education)
+
+    # Create a column to check if the person is vegetarian
+    df['vegetarian'] = np.where((df['lifetime_spend_fish'] == 0 and df['lifetime_spend_meat'] == 0), 1, 0)
 
     # Create a lifetime_total_spent column
     df['lifetime_total_spent'] = df[['lifetime_spend_groceries', 'lifetime_spend_electronics', 'lifetime_spend_vegetables',
