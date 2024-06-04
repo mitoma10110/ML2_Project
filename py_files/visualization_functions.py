@@ -2,23 +2,31 @@ import matplotlib.pyplot as plt
 import pandas as pd
 import seaborn as sns
 
-def plot_column_distribution(df: pd.DataFrame, column_name: str):
+def plot_column_distribution(df: pd.DataFrame, column_name: str, filter_value=None):
     '''
-    Function that plots the distribution of the given column
-    Inputs: df (dataframe)
-            column_name (string) - column to plot
+    Plots the distribution of a specified column in a dataframe, optionally filtered
+    
+    Inputs: df - pandas dataframe
+            column_name - (str) name of the column to plot
+            filter_value - (int or float) optional value to filter the column data
+            
     Outputs: Plot
     '''
-    
-    # Counts the instances of each value (needed for categorical columns)
-    column_counts = df[column_name].value_counts()
+    if filter_value is not None:
+        filtered_data = df[df[column_name] > filter_value][column_name]
+        plt.hist(filtered_data, bins=50)
+        plt.xlabel(column_name)
+        plt.ylabel('Frequency')
+        plt.title(f'Distribution of {column_name} (Above {filter_value})')
+        plt.show()
+    else:
+        plt.hist(df[column_name], bins=50)
+        plt.xlabel(column_name)
+        plt.ylabel('Frequency')
+        plt.title(f'Distribution of {column_name}')
+        plt.show()
 
-    # Plot
-    plt.bar(column_counts.index, column_counts.values)
-    plt.xlabel(column_name)
-    plt.ylabel('Counts')
-    plt.title(f'Counts of {column_name}')
-    plt.show()
+
 
 def plot_variable_correlation(df: pd.DataFrame, cols_to_drop: list) -> list:
     '''
