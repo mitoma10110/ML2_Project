@@ -11,12 +11,8 @@ def cust_info_preproc(df:pd.DataFrame) -> pd.DataFrame:
     '''
     cust_info = deepcopy(df)
 
-    # Convert birth date to datetime and extract age
+    # Convert birth date to datetime
     cust_info['customer_birthdate'] = pd.to_datetime(cust_info['customer_birthdate'])
-    cust_info['age'] = cust_info['customer_birthdate'].apply(lambda x: (pd.Timestamp.now() - x).days // 365)
-
-    # Turn card number into a boolean (True if the person has a card)
-    cust_info['loyalty_program'] = cust_info['loyalty_card_number'].notnull()
 
     # Drop non-numeric columns for imputation
     numeric_cols = cust_info.select_dtypes(include=[np.number]).columns
@@ -25,10 +21,6 @@ def cust_info_preproc(df:pd.DataFrame) -> pd.DataFrame:
     # Missing values: KNN Imputation
     imputer = KNNImputer(n_neighbors=5)
     cust_info[numeric_cols] = imputer.fit_transform(cust_info[numeric_cols])
-
-    # Standardization
-    scaler = RobustScaler()
-    cust_info[numeric_cols] = scaler.fit_transform(cust_info[numeric_cols])
 
     # Combine numeric and non-numeric columns back
     cust_info = pd.concat([cust_info[non_numeric_cols], cust_info[numeric_cols]], axis=1)
@@ -78,7 +70,10 @@ def modelling_separator(df:pd.DataFrame):
 
     return training_set
 
-def standerdization(df:pd.DataFrame) -> pd.DataFrame:
+def scaling(df:pd.DataFrame) -> pd.DataFrame:
+    '''
+    Assuming df is numeric
+    '''
     scaler = RobustScaler()
     scaled = scaler.fit_transform(df)
     return scaled

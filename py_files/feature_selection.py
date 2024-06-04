@@ -1,34 +1,38 @@
 import pandas as pd
 
-def selecting_by_correlation(df:pd.DataFrame, threshold=0.9) -> list:
-    """
-    Select features based on correlation to reduce multicollinearity.
+def custinfo_feature_selection(df: pd.DataFrame) -> pd.DataFrame:
+    '''
+    Function that removes unwanted variables from the dataset
+    '''
+    highly_correlated_vars = ['lifetime_spend_videogames', 'lifetime_spend_meat']
+    for var in highly_correlated_vars:
+        if var in df.columns:
+            df.drop(var, axis=1, inplace=True)
 
-    Inputs: df: pandas DataFrame, the dataset with features.
-            threshold: float, the correlation threshold above which to consider features as highly correlated.
+    return df
 
-    Output: selected_features: list, the names of the selected features.
-    """
-    corr_matrix = df.corr().abs()
+def custinfo_separator(df: pd.DataFrame):
+    '''
+    Function that separates customer_info into variables for purchase history and for demographics
+    '''
+    purchaseHistoryVars = ['lifetime_spend_groceries', 'lifetime_spend_electronics', 'lifetime_spend_vegetables',
+                           'lifetime_spend_nonalcohol_drinks', 'lifetime_spend_alcohol_drinks', 'lifetime_spend_meat', 
+                           'lifetime_spend_fish', 'lifetime_spend_hygiene', 'lifetime_spend_videogames', 
+                           'lifetime_spend_petfood', 'lifetime_total_distinct_products', 
+                           'percentage_products_bought_promotion', 'lifetime_total_spent']
+    
+    purchaseHistorySolution = pd.DataFrame()
+    for var in purchaseHistoryVars:
+        if var in df.columns:
+            purchaseHistorySolution = purchaseHistorySolution.add(df[var])
 
-    # Pairs of highly correlated features
-    high_corr_var = []
-    for i in range(len(corr_matrix.columns)):
-        for j in range(i):
-            if corr_matrix.iloc[i, j] > threshold:
-                high_corr_var.append((corr_matrix.columns[i], corr_matrix.columns[j]))
+    demographicVars = ['gender', 'education', 'kids_home', 'teens_home', 'age',
+                       'latitude', 'longitude', 'year_first_transaction'
+                       'number_complaints', 'typical_hour', 'distinct_stores_visited']
+    
+    demographicSolution = pd.DataFrame()
+    for var in demographicVars:
+        if var in df.columns:
+            demographicSolution = demographicSolution.add(df[var])
 
-    features_to_remove = set()
-
-    for var1, var2 in high_corr_var:
-        if var1 not in features_to_remove and var2 not in features_to_remove:
-            # Removing the feature with higher overall correlation
-            if corr_matrix[var1].sum() > corr_matrix[var2].sum():
-                features_to_remove.add(var1)
-            else:
-                features_to_remove.add(var2)
-
-    # Selected features = not removed
-    selected_features = [feature for feature in df.columns if feature not in features_to_remove]
-
-    return df[selected_features]
+    return purchaseHistorySolution, demographicSolution

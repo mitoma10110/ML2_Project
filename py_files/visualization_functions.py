@@ -2,48 +2,47 @@ import matplotlib.pyplot as plt
 import pandas as pd
 import seaborn as sns
 
-def plot_column_distribution(df:pd.DataFrame, column_name:str):
+def plot_column_distribution(df: pd.DataFrame, column_name: str, filter_value=None):
     '''
-    Function that plots the distribution of the given column
-    Inputs: df (dataframe)
-            column_name (string) - column to plot
+    Plots the distribution of a specified column in a dataframe, optionally filtered
+    
+    Inputs: df - pandas dataframe
+            column_name - (str) name of the column to plot
+            filter_value - (int or float) optional value to filter the column data
+            
     Outputs: Plot
     '''
-    
-    # Counts the instances of each value (needed for categorical columns)
-    column_counts = df[column_name].value_counts()
+    if filter_value is not None:
+        filtered_data = df[df[column_name] > filter_value][column_name]
+        plt.hist(filtered_data, bins=50)
+        plt.xlabel(column_name)
+        plt.ylabel('Frequency')
+        plt.title(f'Distribution of {column_name} (Above {filter_value})')
+        plt.show()
+    else:
+        plt.hist(df[column_name], bins=50)
+        plt.xlabel(column_name)
+        plt.ylabel('Frequency')
+        plt.title(f'Distribution of {column_name}')
+        plt.show()
 
-    # Plot
-    plt.bar(column_counts.index, column_counts.values)
-    plt.xlabel(column_name)
-    plt.ylabel('Counts')
-    plt.title(f'Counts of {column_name}')
-    plt.show()
 
-def variable_correlation(df: pd.DataFrame, threshold: float = 0.7) -> list:
+
+def plot_variable_correlation(df: pd.DataFrame, cols_to_drop: list) -> list:
+    '''
+    Plots the correlation heatmap between variables, dropping the ones indicated
+    '''
     # Generates the correlation matrix
-    correlation_matrix = df.drop(['customer_name','typical_hour','year_first_transaction','customer_gender', 'customer_birthdate'], axis=1).corr()
+    df_plot = df.drop(cols_to_drop, axis=1)
+    df_corr = df_plot.corr()
     
     # Creates a heatmap
     plt.figure(figsize=(12, 8))
-    sns.heatmap(correlation_matrix, annot=True, cmap='coolwarm', fmt=".2f")
+    sns.heatmap(df_corr, annot=True, cmap='coolwarm', fmt=".2f")
     plt.title('Correlation Matrix')
     plt.show()
 
-    # Finds highly correlated variables (below -0.7 or above 0.7, not including)
-    correlated_vars = list()
-    for i in range(len(correlation_matrix.columns)):
-        for j in range(i):
-            if abs(correlation_matrix.iloc[i, j]) > threshold:
-                colname_i = correlation_matrix.columns[i]
-                colname_j = correlation_matrix.columns[j]
-                correlated_vars.append(colname_i)
-                correlated_vars.append(colname_j)
-                correlated_vars.append(' / ')
-
-    print('Highly correlated variables: ', correlated_vars)
-
-def plot_distributions_grid(dataframe, figsize=(20, 15), bins=30):
+def plot_distributions_grid(df: pd.DataFrame, cols_to_drop: list, figsize=(20, 15), bins=30):
     """
     Plot a grid of distributions for all variables in the dataframe.
 
@@ -52,6 +51,9 @@ def plot_distributions_grid(dataframe, figsize=(20, 15), bins=30):
     - figsize: Tuple specifying the figure size. Default is (20, 15).
     - bins: Number of bins for histograms. Default is 30.
     """
+    # Drop the indicated columns
+    dataframe = df.drop(cols_to_drop, axis=1)
+
     # Separate numerical and categorical columns
     numerical_cols = dataframe.select_dtypes(include=['number']).columns
     categorical_cols = dataframe.select_dtypes(include=['object']).columns
