@@ -30,7 +30,7 @@ def find_outliers(data, column, threshold=2):
     Returns:
     - DataFrame containing only the outliers.
     """
-    datacopy= data.deepcopy()
+    datacopy= data.copy()
     datacopy=datacopy.sort_values(by=column, ascending=False)
     mean= datacopy[column].mean()
     std = datacopy[column].std()
