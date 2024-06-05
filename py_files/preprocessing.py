@@ -39,9 +39,15 @@ def cust_info_preproc(df:pd.DataFrame) -> pd.DataFrame:
     numeric_cols = cust_info.select_dtypes(include=[np.number]).columns
     non_numeric_cols = cust_info.select_dtypes(exclude=[np.number]).columns
 
+
     scaling(cust_info, numeric_cols)
     imputation(cust_info, numeric_cols)
 
+
+    # Missing values: KNN Imputation
+    imputer = KNNImputer(n_neighbors=5)
+    cust_info[numeric_cols] = imputer.fit_transform(cust_info[numeric_cols])
+    
     # Combine numeric and non-numeric columns back
     cust_info = pd.concat([cust_info[non_numeric_cols], cust_info[numeric_cols]], axis=1)
 
@@ -89,3 +95,4 @@ def modelling_separator(df:pd.DataFrame):
             training_set[var] = df[var]
 
     return training_set
+
