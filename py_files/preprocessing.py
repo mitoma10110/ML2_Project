@@ -3,7 +3,25 @@ import numpy as np
 from copy import deepcopy
 from sklearn.preprocessing import RobustScaler
 from sklearn.impute import KNNImputer
-product_mapping = pd.read_excel('data\product_mapping.xlsx')
+from py_files.feature_engineering import *
+
+def scaling(df:pd.DataFrame) -> pd.DataFrame:
+    '''
+    Assuming df is numeric
+    '''
+    scaler = RobustScaler()
+    scaled = scaler.fit_transform(df)
+    return scaled
+
+def convert_date_times(df, columns):
+    for col in columns:
+        df[str(col)] = pd.to_datetime(df[str(col)])
+
+
+def imputation(df, numeric_cols):
+    imputer = KNNImputer(n_neighbors=5)
+    df[numeric_cols] = imputer.fit_transform(df[numeric_cols])
+
 
 def cust_info_preproc(df:pd.DataFrame) -> pd.DataFrame:
     '''
@@ -11,20 +29,20 @@ def cust_info_preproc(df:pd.DataFrame) -> pd.DataFrame:
     '''
     cust_info = deepcopy(df)
 
-    # Convert birth date to datetime and extract age
-    cust_info['customer_birthdate'] = pd.to_datetime(cust_info['customer_birthdate'])
-    cust_info['age'] = cust_info['customer_birthdate'].apply(lambda x: (pd.Timestamp.now() - x).days // 365)
+    # Convert birth date to datetime
+    convert_date_times(cust_info, columns=['customer_birthdate'])
 
-    # Turn card number into a boolean (True if the person has a card)
-    cust_info['loyalty_program'] = cust_info['loyalty_card_number'].notnull()
+    # Feature engineering
+    cust_info = custinfo_create_variables(cust_info)
 
     # Drop non-numeric columns for imputation
     numeric_cols = cust_info.select_dtypes(include=[np.number]).columns
     non_numeric_cols = cust_info.select_dtypes(exclude=[np.number]).columns
 
-    # Standardization
-    scaler = RobustScaler()
-    cust_info[numeric_cols] = scaler.fit_transform(cust_info[numeric_cols])
+
+    scaling(cust_info, numeric_cols)
+    imputation(cust_info, numeric_cols)
+
 
     # Missing values: KNN Imputation
     imputer = KNNImputer(n_neighbors=5)
@@ -35,7 +53,7 @@ def cust_info_preproc(df:pd.DataFrame) -> pd.DataFrame:
 
     return cust_info
 
-def cust_basket_preproc(df):
+def cust_basket_preproc(df, product_maping):
     '''
     Function that applies preprocessing to the customer basket dataset
     '''
@@ -59,11 +77,22 @@ def cust_basket_preproc(df):
     return cust_basket
 
 
-def cust_info_separator(df:pd.DataFrame):
+def modelling_separator(df:pd.DataFrame):
     '''
     Function that separates the variables into variables to use for
     modelling and for interpreting the clusters
     '''
-    modelling = df.select_dtypes(include=[np.number])
-    interpreting = df.select_dtypes(exclude=[np.number])
-    return modelling, interpreting
+    training_vars = ['customer_birthdate', 'kids_home', 'teens_home', 'number_complaints',
+                     'distinct_stores_visited', 'lifetime_spend_groceries', 'lifetime_spend_electronics',
+                     'typical_hour', 'lifetime_spend_vegetables', 'lifetime_spend_nonalcohol_drinks',
+                     'lifetime_spend_alcohol_drinks', 'lifetime_spend_meat', 'lifetime_spend_fish',
+                     'lifetime_spend_hygiene', 'lifetime_spend_videogames', 'lifetime_spend_petfood',
+                     'lifetime_total_distinct_products', 'percentage_of_products_bought_promotion', 'year_first_transaction']
+    training_set = pd.DataFrame
+
+    for var in training_vars:
+        if var in df.columns:
+            training_set[var] = df[var]
+
+    return training_set
+
