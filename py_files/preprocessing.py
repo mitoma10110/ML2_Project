@@ -5,13 +5,12 @@ from sklearn.preprocessing import RobustScaler
 from sklearn.impute import KNNImputer
 from py_files.feature_engineering import *
 
-def scaling(df:pd.DataFrame) -> pd.DataFrame:
+def scaling(df:pd.DataFrame, numeric_cols) -> pd.DataFrame:
     '''
     Assuming df is numeric
     '''
     scaler = RobustScaler()
-    scaled = scaler.fit_transform(df)
-    return scaled
+    df[numeric_cols] = scaler.fit_transform(df[numeric_cols])
 
 def convert_date_times(df, columns):
     for col in columns:
