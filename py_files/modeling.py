@@ -8,6 +8,7 @@ def create_dispersion_list(data, k_limit=20):
     return dispersion
 
 def create_agg_clusters(data, linkage='ward', distance_threshold=0, n_clusters=None):
+    
     agg_clust = AgglomerativeClustering(
         linkage=linkage, distance_threshold=distance_threshold, n_clusters=n_clusters
         ).fit(data)
