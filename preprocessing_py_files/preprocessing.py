@@ -3,49 +3,57 @@ import numpy as np
 from copy import deepcopy
 from sklearn.preprocessing import RobustScaler
 from sklearn.impute import KNNImputer
-from mlxtend.preprocessing import TransactionEncoder
+from preprocessing_py_files.feature_engineering import *
 
-# Preproc utils
+def scaling(df:pd.DataFrame) -> pd.DataFrame:
+    '''
+    Assuming df is numeric
+    '''
+    scaler = RobustScaler()
+    scaled = scaler.fit_transform(df)
+    return scaled
 
-def scaling(df:pd.DataFrame, numeric_cols:list) -> pd.DataFrame:
-  '''
-  Scales the given numeric columns using Robust
-  '''
-  scaler = RobustScaler()
-  df[numeric_cols] = scaler.fit_transform(df[numeric_cols])
-  return df
+def convert_date_times(df, columns):
+    for col in columns:
+        df[str(col)] = pd.to_datetime(df[str(col)])
 
-def imputation(df:pd.DataFrame, colstoimpute:list) -> pd.DataFrame:
-  '''
-  Applies knnimputer to the given columns
-  '''
-  imputer = KNNImputer(n_neighbors=5)
-  df[colstoimpute] = imputer.fit_transform(df[colstoimpute])
-  return df
 
-# Preproc functs
-def scaling_imputation(df:pd.DataFrame) -> pd.DataFrame:
-  '''
-  Function that imputes missing values, scaling the data to do so
-  '''
-  cust_info = deepcopy(df)
-  cust_info.index = cust_info.customer_id
+def imputation(df, numeric_cols):
+    imputer = KNNImputer(n_neighbors=5)
+    df[numeric_cols] = imputer.fit_transform(df[numeric_cols])
 
-  # Drop non-numeric columns for imputation
-  numeric_cols = cust_info.select_dtypes(include=[np.number]).columns
-  non_numeric_cols = cust_info.select_dtypes(exclude=[np.number]).columns
 
-  # Scaling and imputation
-  scaling(cust_info, numeric_cols)
-  imputation(cust_info, numeric_cols)
+def cust_info_preproc(df:pd.DataFrame) -> pd.DataFrame:
+    '''
+    Function that applies preprocessing to the customer info dataset
+    '''
+    cust_info = deepcopy(df)
 
-  # Combine numeric and non-numeric columns back
-  cust_info = pd.concat([cust_info[non_numeric_cols], cust_info[numeric_cols]], axis=1)
-  cust_info.drop('customer_id', axis=1, inplace=True)
+    # Convert birth date to datetime
+    convert_date_times(cust_info, columns=['customer_birthdate'])
 
-  return cust_info
+    # Feature engineering
+    cust_info = custinfo_create_variables(cust_info)
 
-def cust_basket_preproc(df):
+    # Drop non-numeric columns for imputation
+    numeric_cols = cust_info.select_dtypes(include=[np.number]).columns
+    non_numeric_cols = cust_info.select_dtypes(exclude=[np.number]).columns
+
+
+    scaling(cust_info, numeric_cols)
+    imputation(cust_info, numeric_cols)
+
+
+    # Missing values: KNN Imputation
+    imputer = KNNImputer(n_neighbors=5)
+    cust_info[numeric_cols] = imputer.fit_transform(cust_info[numeric_cols])
+    
+    # Combine numeric and non-numeric columns back
+    cust_info = pd.concat([cust_info[non_numeric_cols], cust_info[numeric_cols]], axis=1)
+
+    return cust_info
+
+def cust_basket_preproc(df, product_maping):
     '''
     Function that applies preprocessing to the customer basket dataset
     '''
@@ -53,21 +61,38 @@ def cust_basket_preproc(df):
     # Convert purchases from strings to actual lists
     cust_basket['list_of_goods'] = cust_basket['list_of_goods'].apply(eval)
 
-    cust_basket.index = cust_basket.invoice_id
+    # Create a dictionary from product mapping
+    product_mapping_dict = pd.Series(product_mapping['category'].values, index=product_mapping['product_name']).to_dict()
 
-    cust_basket.drop('invoice_id', axis=1, inplace=True)
+    # Map each item in the list_of_goods to its category
+    cust_basket['categories'] = cust_basket['list_of_goods'].apply(lambda x: [product_mapping_dict.get(item, 'Unknown') for item in x])
+
+    # Create the category columns with counts of items purchased in each category
+    for category in product_mapping['category'].unique():
+        cust_basket[category] = cust_basket['categories'].apply(lambda x: x.count(category))
+
+    # Drop the intermediate 'categories' column
+    cust_basket = cust_basket.drop(columns=['categories'])
 
     return cust_basket
 
-def cust_basket_encoding(df):
-  goods = df['list_of_goods'].to_list()
 
-  te = TransactionEncoder()
-  te_fit = te.fit(goods).transform(goods)
-  encoded = pd.DataFrame(te_fit, columns=te.columns_)
+def modelling_separator(df:pd.DataFrame):
+    '''
+    Function that separates the variables into variables to use for
+    modelling and for interpreting the clusters
+    '''
+    training_vars = ['customer_birthdate', 'kids_home', 'teens_home', 'number_complaints',
+                     'distinct_stores_visited', 'lifetime_spend_groceries', 'lifetime_spend_electronics',
+                     'typical_hour', 'lifetime_spend_vegetables', 'lifetime_spend_nonalcohol_drinks',
+                     'lifetime_spend_alcohol_drinks', 'lifetime_spend_meat', 'lifetime_spend_fish',
+                     'lifetime_spend_hygiene', 'lifetime_spend_videogames', 'lifetime_spend_petfood',
+                     'lifetime_total_distinct_products', 'percentage_of_products_bought_promotion', 'year_first_transaction']
+    training_set = pd.DataFrame
 
-  encoded_df = pd.concat([df.reset_index(drop=True), encoded], axis=1)
-  encoded_df.index = df.index
-  encoded_df.drop('list_of_goods', axis=1, inplace=True)
+    for var in training_vars:
+        if var in df.columns:
+            training_set[var] = df[var]
 
-  return encoded_df
+    return training_set
+
