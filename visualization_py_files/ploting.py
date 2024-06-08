@@ -74,3 +74,29 @@ def plot_dendrogram(model, **kwargs):
 
     # Plot the corresponding dendrogram
     dendrogram(linkage_matrix, **kwargs)
+
+def plot_cluster_description(modeldf_purchase):
+    # Plotting cluster description using only the modelling variables
+    cluster_means = modeldf_purchase.groupby('cluster_kmeans').mean()
+    overall_mean = modeldf_purchase.mean()
+
+    overall_mean_df = overall_mean.to_frame().T
+    overall_mean_df.index = ['Overall Mean']
+    plt.figure(figsize=(14, 8))
+
+    # Plot each variable's mean for each cluster using clustered bar plots
+    ax = cluster_means.T.plot(kind='bar', width=0.4, position=1.5, ax=None, figsize=(14, 8))
+
+    # Plot the overall mean using a line plot on the same axes
+    overall_mean_df.T.plot(kind='line', marker='o', linestyle='--', color='black', linewidth=2, ax=ax, label='Overall Mean')
+
+    plt.title('Mean of Each Variable by Cluster with Overall Mean')
+    plt.xlabel('Variables')
+    plt.ylabel('Mean Value')
+    plt.legend()
+    plt.xticks(rotation=45)
+    plt.show()
+
+def plot_cluster_sizes(modeldf_purchase):
+    modeldf_purchase.groupby(['cluster_kmeans']).size().plot(kind='bar')
+    plt.show()
