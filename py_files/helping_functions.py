@@ -17,6 +17,8 @@ def find_fishermen(data, longitude_threshold=-9.45, tolerance=0.1):
     data = data.drop(fisherman for fisherman in fishermen.index)
     
     return data, fishermen
+
+
 def show_outliers(data, threshold=2):
     """
     Function to find outliers in each column of a DataFrame and print the number of outliers.
