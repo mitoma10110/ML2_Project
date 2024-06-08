@@ -1,4 +1,6 @@
 import numpy as np
+
+
 def find_fishermen(data, longitude_threshold=-9.45, tolerance=0.1):
     """
     Function to find fishermen based on their longitude being near a specified threshold.
