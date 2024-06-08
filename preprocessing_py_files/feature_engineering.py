@@ -1,42 +1,64 @@
 import numpy as np
 import pandas as pd
+from copy import deepcopy
 
-def extract_education(name):
-    if 'Bsc.' in name:
-        return 'Bsc.'
-    elif 'Msc.' in name:
-        return 'Msc.'
-    elif 'Phd.' in name:
-        return 'Phd.'
-    else:
-        return 'None'
+def convert_date_times(df:pd.DataFrame, columns:list) -> pd.DataFrame:
+  '''
+  Converts the given columns to datetime
+  '''
+  for col in columns:
+    df[str(col)] = pd.to_datetime(df[str(col)])
+  return df
 
-def custinfo_create_variables(df):
-    '''
-    Creates new variables and adds them to df
-    '''
-    # Extract age from birthdate
-    df['age'] = df['customer_birthdate'].apply(lambda x: (pd.Timestamp.now() - x).days // 365)
-    df.drop('customer_birthdate', axis=1, inplace=True)
+def extract_education(name:str) -> int:
+  '''
+  Maps strings found in names to their corresponding years of education
+  Assuming none = 12 years of base education
+  '''
+  if 'Bsc.' in name:
+      return 15
+  elif 'Msc.' in name:
+      return 17
+  elif 'Phd.' in name:
+      return 19
+  else:
+      return 12
 
-    # Turn gender into a boolean (True if female)
-    df['gender'] = df['customer_gender'].apply(lambda gender: 1 if gender == 'female' else 0)
-    df.drop('customer_gender', axis=1, inplace=True)
+def custinfo_feature_eng(df:pd.DataFrame) -> pd.DataFrame:
+  '''
+  Creates new variables and adds them to df
+  To be applied to the original customer_info dataset
+  '''
+  cust_info = deepcopy(df)
+  cust_info.index = cust_info.customer_id
+  cust_info.drop('customer_id', axis=1, inplace=True)
 
-    # Turn card number into a boolean (True if the person has a card)
-    df['loyalty_program'] = df['loyalty_card_number'].notnull()
-    df.drop('loyalty_card_number', axis=1, inplace=True)
+  # Fixing the negative percentages in the percentage_bought_promotion column
+  cust_info['percentage_of_products_bought_promotion'] = abs(cust_info['percentage_of_products_bought_promotion'])
 
-    # Apply the function created above to create a new 'Education' column
-    df['education'] = df['customer_name'].apply(extract_education)
+  # Extract age from birthdate (considering today=08/06/2024)
+  convert_date_times(cust_info, columns=['customer_birthdate'])
+  cust_info['age'] = cust_info['customer_birthdate'].apply(lambda x: (pd.to_datetime('2024-06-08 11:06:17.747865') - x).days // 365)
+  cust_info.drop('customer_birthdate', axis=1, inplace=True)
 
-    # Create a column to check if the person is vegetarian
-    df['vegetarian'] = np.where((df['lifetime_spend_fish'] == 0 and df['lifetime_spend_meat'] == 0), 1, 0)
+  # Turn gender into a boolean (True if female)
+  cust_info['gender'] = cust_info['customer_gender'].apply(lambda gender: 1 if gender == 'female' else 0)
+  cust_info.drop('customer_gender', axis=1, inplace=True)
 
-    # Create a lifetime_total_spent column
-    df['lifetime_total_spent'] = df[['lifetime_spend_groceries', 'lifetime_spend_electronics', 'lifetime_spend_vegetables',
-                                    'lifetime_spend_nonalcohol_drinks', 'lifetime_spend_alcohol_drinks', 'lifetime_spend_meat', 
-                                    'lifetime_spend_fish', 'lifetime_spend_hygiene', 'lifetime_spend_videogames', 
-                                    'lifetime_spend_petfood', 'lifetime_total_distinct_products']].sum(axis=1)
+  # Turn card number into a boolean (True if the person has a card)
+  cust_info['loyalty_program'] = cust_info['loyalty_card_number'].notnull()
+  cust_info.drop('loyalty_card_number', axis=1, inplace=True)
 
-    return df
+  # Apply the function created above to create a new 'Education' column
+  cust_info['education'] = cust_info['customer_name'].apply(extract_education)
+
+  # Create a column to check if the person is vegetarian
+  cust_info['vegetarian'] = np.where((cust_info['lifetime_spend_fish'] == 0) & (cust_info['lifetime_spend_meat'] == 0), 1, 0)
+
+  # Create a lifetime_total_spent column
+  cust_info['lifetime_total_spent'] = cust_info[['lifetime_spend_groceries', 'lifetime_spend_electronics', 'lifetime_spend_vegetables',
+                                  'lifetime_spend_nonalcohol_drinks', 'lifetime_spend_alcohol_drinks', 'lifetime_spend_meat',
+                                  'lifetime_spend_fish', 'lifetime_spend_hygiene', 'lifetime_spend_videogames',
+                                  'lifetime_spend_petfood', 'lifetime_total_distinct_products']].sum(axis=1)
+
+  return cust_info
