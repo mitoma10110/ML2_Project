@@ -75,10 +75,12 @@ def plot_dendrogram(model, **kwargs):
     # Plot the corresponding dendrogram
     dendrogram(linkage_matrix, **kwargs)
 
-def plot_cluster_description(modeldf_purchase):
+def plot_cluster_description(df):
+    df = df.select_dtypes(include=[np.number])
+
     # Plotting cluster description using only the modelling variables
-    cluster_means = modeldf_purchase.groupby('cluster_kmeans').mean()
-    overall_mean = modeldf_purchase.mean()
+    cluster_means = df.groupby('cluster_kmeans').mean()
+    overall_mean = df.mean()
 
     overall_mean_df = overall_mean.to_frame().T
     overall_mean_df.index = ['Overall Mean']
@@ -116,4 +118,3 @@ def plot_cluster_against_overall_mean(comparison_df):
     plt.ylabel('Mean Values')
     plt.xticks(rotation=45)
     plt.legend(loc='best')
-    plt.show()

@@ -28,22 +28,19 @@ def scaling_imputation(df:pd.DataFrame) -> pd.DataFrame:
   '''
   Function that imputes missing values, scaling the data to do so
   '''
-  cust_info = deepcopy(df)
-  cust_info.index = cust_info.customer_id
-
+  
   # Drop non-numeric columns for imputation
-  numeric_cols = cust_info.select_dtypes(include=[np.number]).columns
-  non_numeric_cols = cust_info.select_dtypes(exclude=[np.number]).columns
+  numeric_cols = df.select_dtypes(include=[np.number]).columns
+  non_numeric_cols = df.select_dtypes(exclude=[np.number]).columns
 
   # Scaling and imputation
-  scaling(cust_info, numeric_cols)
-  imputation(cust_info, numeric_cols)
+  scaling(df, numeric_cols)
+  imputation(df, numeric_cols)
 
   # Combine numeric and non-numeric columns back
-  cust_info = pd.concat([cust_info[non_numeric_cols], cust_info[numeric_cols]], axis=1)
-  cust_info.drop('customer_id', axis=1, inplace=True)
-
-  return cust_info
+  df = pd.concat([df[non_numeric_cols], df[numeric_cols]], axis=1)
+  
+  return df
 
 def cust_basket_preproc(df):
     '''
