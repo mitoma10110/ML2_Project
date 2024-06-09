@@ -2,7 +2,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import numpy as np
 from sklearn.manifold import TSNE
-import umap.umap_ as umap
+import umap
 
 
 def visualize_dimensionality_reduction(transformation, targets):
