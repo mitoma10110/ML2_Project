@@ -2,28 +2,46 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import numpy as np
 from sklearn.manifold import TSNE
-import umap
+import umap.umap_ as umap
+
 
 def visualize_dimensionality_reduction(transformation, targets):
     '''
     Author: Yehor Malakov
     20221691@novaims.unl.pt
     '''
-    # create a scatter plot of the t-SNE output
-    plt.scatter(transformation[:, 0], transformation[:, 1],
-                c=np.array(targets).astype(int), cmap=plt.cm.tab20)
-
+    # Ensure that the targets are numpy array of integers
+    targets = np.array(targets).astype(int)
     labels = np.unique(targets)
-
+    
+    # Create the scatter plot
+    plt.figure(figsize=(10, 7))
+    scatter = plt.scatter(transformation[:, 0], transformation[:, 1],
+                          c=targets, cmap=plt.cm.tab20, s=10, alpha=0.7)
+    
+    # Create a legend with the class labels and colors
+    handles = []
     cmap = plt.cm.tab20
-    norm = plt.Normalize(vmin=min(np.array(labels).astype(int)), vmax=max(np.array(labels).astype(int)))
-    rgba_values = cmap(norm(labels))
+    norm = plt.Normalize(vmin=labels.min(), vmax=labels.max())
+    for label in labels:
+        color = cmap(norm(label))
+        handles.append(plt.Line2D([0], [0], marker='o', color='w', label=str(label),
+                                  markerfacecolor=color, markersize=10))
 
-    # create a legend with the class labels and colors
-    handles = [plt.scatter([], [], c=rgba, label=label) for rgba, label in zip(rgba_values, labels)]
-    plt.legend(handles=handles, title='Classes')
-
+    plt.legend(handles=handles, title='Classes', loc='best', ncol=1, fontsize='small')
+    
+    plt.xlabel('Component 1')
+    plt.ylabel('Component 2')
+    plt.title('Dimensionality Reduction Visualization')
+    plt.grid(True)
     plt.show()
+
+# Example usage:
+# Assuming you have a transformation result (e.g., from t-SNE or PCA) and corresponding targets
+# transformation = np.random.rand(100, 2)  # example transformation data
+# targets = np.random.randint(0, 20, size=100)  # example target labels
+# visualize_dimensionality_reduction(transformation, targets)
+
 
 def apply_tsne(dataset):
     X_sample = dataset.iloc[:,1:].sample(20000)

@@ -1,5 +1,6 @@
 import numpy as np
 import pandas as pd
+import matplotlib.pyplot as plt
 def find_fishermen(data, longitude_threshold=-9.45, tolerance=0.1):
     """
     Function to find fishermen based on their longitude being near a specified threshold.
@@ -105,6 +106,5 @@ def show_clusters(data, cluster_column, cluster_numbers):
     # Print overall dataset size
     overall_size = data.shape[0]
     print(f"Overall dataset size: {overall_size}")
-
     # Print the comparison DataFrame
     return comparison_df
