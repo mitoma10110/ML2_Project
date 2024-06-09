@@ -38,23 +38,3 @@ def assign_clusters(dataset, subset_size):
     dataset['cluster'] = closest_cluster_letters
 
     return dataset
-
-
-# Testing --------------------------------------------------------------
-# Note: I asked chat for this, no idea "make_blobs" was a thing
-# We should probably learn this for testing clustering algorithms, seems useful
-
-from sklearn.datasets import make_blobs
-
-# Generate synthetic dataset
-n_samples = 1000
-n_features = 4
-centers = 3  # Number of clusters
-random_state = 42
-
-X, _ = make_blobs(n_samples=n_samples, n_features=n_features, centers=centers, random_state=random_state)
-
-# Example usage:
-subset_size = 100
-predicted_labels = assign_clusters(pd.DataFrame(X), subset_size)
-print(predicted_labels)
