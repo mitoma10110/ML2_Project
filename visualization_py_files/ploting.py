@@ -100,3 +100,20 @@ def plot_cluster_description(modeldf_purchase):
 def plot_cluster_sizes(modeldf_purchase):
     modeldf_purchase.groupby(['cluster_kmeans']).size().plot(kind='bar')
     plt.show()
+
+def plot_cluster_against_overall_mean(comparison_df):
+    '''
+    Function to plot the comparison of overall mean and cluster means
+
+    Inputs:
+    - comparison_df: Dataframe with the overall mean and cluster means
+        Created by the show_clusters() function
+    '''
+    comparison_df = comparison_df.T
+
+    comparison_df.plot(kind='bar', figsize=(12, 8))
+    plt.title('Cluster Means Comparison')
+    plt.ylabel('Mean Values')
+    plt.xticks(rotation=45)
+    plt.legend(loc='best')
+    plt.show()
