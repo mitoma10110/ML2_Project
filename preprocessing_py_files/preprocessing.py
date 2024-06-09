@@ -5,8 +5,7 @@ from sklearn.preprocessing import RobustScaler
 from sklearn.impute import KNNImputer
 from mlxtend.preprocessing import TransactionEncoder
 
-# Preproc utils
-
+# Preproc utils---
 def scaling(df:pd.DataFrame, numeric_cols:list) -> pd.DataFrame:
   '''
   Scales the given numeric columns using Robust
@@ -23,12 +22,14 @@ def imputation(df:pd.DataFrame, colstoimpute:list) -> pd.DataFrame:
   df[colstoimpute] = imputer.fit_transform(df[colstoimpute])
   return df
 
-# Preproc functs
-def scaling_imputation(df:pd.DataFrame) -> pd.DataFrame:
+
+# Preproc functs ---
+def scaling_imputation(data:pd.DataFrame) -> pd.DataFrame:
   '''
   Function that imputes missing values, scaling the data to do so
   '''
-  
+  df = deepcopy(data)
+
   # Drop non-numeric columns for imputation
   numeric_cols = df.select_dtypes(include=[np.number]).columns
   non_numeric_cols = df.select_dtypes(exclude=[np.number]).columns
