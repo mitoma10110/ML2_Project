@@ -1,6 +1,8 @@
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
+
+
 def find_fishermen(data, longitude_threshold=-9.45, tolerance=0.1):
     """
     Function to find fishermen based on their longitude being near a specified threshold.
@@ -86,7 +88,7 @@ def show_clusters(data, cluster_column, cluster_numbers):
         return
 
     # Calculate the overall mean
-    overall_mean = data[data.select_dtypes(include=[np.number]).columns].mean()
+    overall_mean = round(data[data.select_dtypes(include=[np.number]).columns].mean(), 2)
 
     # Initialize the comparison DataFrame with the overall mean
     comparison_df = pd.DataFrame({
@@ -96,7 +98,7 @@ def show_clusters(data, cluster_column, cluster_numbers):
     # Calculate and add the means of the specified clusters to the comparison DataFrame
     for cluster_number in cluster_numbers:
         cluster_data = data[data[cluster_column] == cluster_number]
-        cluster_mean = cluster_data[cluster_data.select_dtypes(include=[np.number]).columns].mean()
+        cluster_mean = round(cluster_data[cluster_data.select_dtypes(include=[np.number]).columns].mean(), 2)
         comparison_df[f'Cluster {cluster_number} Mean'] = cluster_mean
 
         # Print cluster size
