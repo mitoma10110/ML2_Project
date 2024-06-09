@@ -44,6 +44,9 @@ def visualize_dimensionality_reduction(transformation, targets):
 
 
 def apply_tsne(dataset):
+    '''
+    Function to visualize clusters through T-SNE
+    '''
     X_sample = dataset.iloc[:,1:].sample(20000)
     y_sample = dataset.iloc[:,0].loc[X_sample.index]
 
@@ -75,6 +78,9 @@ def apply_tsne(dataset):
     return correlation_tsne
 
 def apply_umap(dataset):
+    '''
+    Function to visualize clusters through UMAP
+    '''
     X_sample = dataset.iloc[:,1:].sample(20000)
     y_sample = dataset.iloc[:,0].loc[X_sample.index]
 
