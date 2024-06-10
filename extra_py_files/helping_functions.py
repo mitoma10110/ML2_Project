@@ -1,9 +1,17 @@
 import numpy as np
 import pandas as pd
-import matplotlib.pyplot as plt
-
 
 def compare(df_one, df_two):
+    """
+    Function to compare the means of two DataFrames side by side.
+
+    Parameters:
+    - df_one: First DataFrame to compare.
+    - df_two: Second DataFrame to compare.
+
+    Returns:
+    - DataFrame containing the means of both DataFrames side by side.
+    """
 
     df_one_means = df_one.select_dtypes(include='number').mean().round(2)
     df_two_means = df_two.select_dtypes(include='number').mean().round(2)

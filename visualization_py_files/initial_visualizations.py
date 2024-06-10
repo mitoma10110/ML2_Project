@@ -31,6 +31,11 @@ def plot_column_distribution(df: pd.DataFrame, column_name: str, filter_value=No
 def plot_variable_correlation(df: pd.DataFrame, cols_to_drop: list) -> list:
     '''
     Plots the correlation heatmap between variables, dropping the ones indicated
+
+    Inputs: df - pandas dataframe
+            cols_to_drop - list of columns to drop before plotting
+    
+    Outputs: Plot
     '''
     # Generates the correlation matrix
     df_plot = df.drop(cols_to_drop, axis=1)
@@ -46,10 +51,13 @@ def plot_distributions_grid(df: pd.DataFrame, cols_to_drop: list, figsize=(20, 1
     """
     Plot a grid of distributions for all variables in the dataframe.
 
-    Parameters:
+    Inputs:
     - dataframe: DataFrame containing data to plot.
     - figsize: Tuple specifying the figure size. Default is (20, 15).
     - bins: Number of bins for histograms. Default is 30.
+
+    Outputs:
+    - None: Displays the plot
     """
     # Drop the indicated columns
     dataframe = df.drop(cols_to_drop, axis=1)

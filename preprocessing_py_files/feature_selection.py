@@ -3,6 +3,12 @@ import pandas as pd
 def feature_selection(df: pd.DataFrame) -> pd.DataFrame:
     '''
     Function that removes unwanted variables from the dataset
+
+    Inputs:
+    - df: DataFrame containing the data
+
+    Outputs:
+    - DataFrame with the unwanted variables removed
     '''
     highly_correlated_vars = ['lifetime_spend_videogames', 'lifetime_spend_fish', 'lifetime_spend_meat']
     for var in highly_correlated_vars:
@@ -14,6 +20,12 @@ def feature_selection(df: pd.DataFrame) -> pd.DataFrame:
 def modelling_separator(df:pd.DataFrame):
   '''
   Function that separates out the columns to model
+
+    Inputs:
+    - df: DataFrame containing the data
+
+    Outputs:
+    - DataFrame with the columns to model
   '''
 
   vars = ['lifetime_spend_groceries', 'lifetime_spend_electronics', 'lifetime_spend_vegetables',

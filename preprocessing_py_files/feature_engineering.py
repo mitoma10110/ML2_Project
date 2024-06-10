@@ -4,7 +4,14 @@ from copy import deepcopy
 
 def convert_date_times(df:pd.DataFrame, columns:list) -> pd.DataFrame:
   '''
-  Converts the given columns to datetime
+  Converts columns in a DataFrame to datetime format
+  
+  Inputs:
+  - df: DataFrame containing the data
+  - columns: List of columns to be converted
+  
+  Outputs:
+  - DataFrame with the columns converted to datetime format
   '''
   for col in columns:
     df[str(col)] = pd.to_datetime(df[str(col)])
@@ -14,6 +21,12 @@ def extract_education(name:str) -> int:
   '''
   Maps strings found in names to their corresponding years of education
   Assuming none = 12 years of base education
+
+  Inputs:
+  - name: String containing the name of the person
+
+  Outputs:
+  - Integer representing the years of education
   '''
   if 'Bsc.' in name:
       return 15
@@ -24,10 +37,17 @@ def extract_education(name:str) -> int:
   else:
       return 12
 
+
 def custinfo_feature_eng(df:pd.DataFrame) -> pd.DataFrame:
   '''
   Creates new variables and adds them to df
   To be applied to the original customer_info dataset
+
+  Inputs:
+  - df: DataFrame containing the data
+
+  Outputs:
+  - DataFrame with the new variables added, and the old ones removed
   '''
   cust_info = deepcopy(df)
   cust_info.index = cust_info.customer_id
