@@ -77,7 +77,7 @@ def apply_tsne(dataset):
 
     return correlation_tsne
 
-def apply_umap(dataset):
+def apply_umap(dataset, cluster_column='cluster_kmeans'):
     '''
     Function to visualize clusters through UMAP
     '''
@@ -92,10 +92,10 @@ def apply_umap(dataset):
     dataset['umap_2'] = umap_embeddings[:, 1]
     plt.figure(figsize=(10, 7))
     scatter = plt.scatter(dataset['umap_1'], dataset['umap_2'], 
-                        c=dataset['cluster_kmeans'], cmap='Spectral', s=10)
+                        c=dataset[cluster_column], cmap='Spectral', s=10)
 
     '''Adding labels to the clusters'''
-    for cluster in set(dataset['cluster_kmeans']):
+    for cluster in set(dataset[cluster_column]):
         plt.scatter([], [], c=scatter.cmap(scatter.norm(cluster)), label=f'Cluster {cluster}')
 
     plt.ylabel('UMAP Dimension 2')
