@@ -1,6 +1,18 @@
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
+
+
+def compare(df_one, df_two):
+
+    df_one_means = df_one.select_dtypes(include='number').mean().round()
+    df_two_means = df_two.select_dtypes(include='number').mean().round()
+
+    comparison_df = pd.concat([df_one_means, df_two_means], axis=1)
+    comparison_df.columns = ['df1_means', 'df2_means']
+
+    return comparison_df
+
 def find_fishermen(data, longitude_threshold=-9.45, tolerance=0.1):
     """
     Function to find fishermen based on their longitude being near a specified threshold.

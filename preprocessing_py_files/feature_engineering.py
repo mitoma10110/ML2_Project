@@ -61,4 +61,7 @@ def custinfo_feature_eng(df:pd.DataFrame) -> pd.DataFrame:
                                   'lifetime_spend_fish', 'lifetime_spend_hygiene', 'lifetime_spend_videogames',
                                   'lifetime_spend_petfood', 'lifetime_total_distinct_products']].sum(axis=1)
 
-  return cust_info
+  print('Added columns: age, gender, loyalty_program, education, vegetarian, lifetime_total_spent.')
+  print('Droped columns: customer_birthdate, customer_gender, loyalty_card_number.')
+  print()
+  return cust_info 
