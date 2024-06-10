@@ -2,6 +2,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.offsetbox import OffsetImage, AnnotationBbox
 from scipy.cluster.hierarchy import dendrogram, linkage
+from sklearn.neighbors import NearestNeighbors
 from shapely.geometry import Point
 import geopandas as gpd
 
@@ -74,6 +75,17 @@ def plot_dendrogram(model, **kwargs):
 
     # Plot the corresponding dendrogram
     dendrogram(linkage_matrix, **kwargs)
+
+
+def plot_k_distance(X, k):
+    nbrs = NearestNeighbors(n_neighbors=k).fit(X)
+    distances, indices = nbrs.kneighbors(X)
+    distances = np.sort(distances[:, k-1], axis=0)
+    plt.plot(distances)
+    plt.xlabel('Points sorted by distance')
+    plt.ylabel(f'{k}-th Nearest Neighbor Distance')
+    plt.title(f'k-distance Graph for k={k}')
+    plt.show()
 
 def plot_cluster_description(df):
     df = df.select_dtypes(include=[np.number])

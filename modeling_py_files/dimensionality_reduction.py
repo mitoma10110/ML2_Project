@@ -77,10 +77,12 @@ def apply_tsne(dataset):
 
     return correlation_tsne
 
-def apply_umap(dataset, cluster_column='cluster_kmeans'):
+def apply_umap(df, cluster_column='cluster_kmeans'):
     '''
     Function to visualize clusters through UMAP
     '''
+    dataset = df.copy()
+
     umap_model = umap.UMAP(n_neighbors=15, min_dist=0.3, n_components=2, random_state=0)
 
     # Step 2: Fit and transform the data

@@ -5,8 +5,8 @@ import matplotlib.pyplot as plt
 
 def compare(df_one, df_two):
 
-    df_one_means = df_one.select_dtypes(include='number').mean().round()
-    df_two_means = df_two.select_dtypes(include='number').mean().round()
+    df_one_means = df_one.select_dtypes(include='number').mean().round(2)
+    df_two_means = df_two.select_dtypes(include='number').mean().round(2)
 
     comparison_df = pd.concat([df_one_means, df_two_means], axis=1)
     comparison_df.columns = ['df1_means', 'df2_means']
