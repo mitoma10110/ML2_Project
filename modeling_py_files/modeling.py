@@ -62,24 +62,6 @@ def print_dbscan_info(labels):
 
     return clusters, noise_points
 
-def create_agg_clusters(data, linkage='ward', distance_threshold=None, n_clusters=None):
-    """
-    Create agglomerative clusters using the given data.
-
-    Inputs:
-    - data: The input data for clustering.
-    - linkage: The linkage criterion to use for clustering. Default is 'ward'.
-    - distance_threshold: The threshold to use for clustering. Default is None.
-    - n_clusters: The number of clusters to form. Default is None.
-
-    Outputs:
-    - agg_clust: The fitted AgglomerativeClustering model.
-
-    """
-    model = AgglomerativeClustering(linkage=linkage, distance_threshold=distance_threshold, n_clusters=n_clusters)
-    agg_clust = model.fit(data)
-    return agg_clust
-
 def batch_meanshift(X, bandwidth, batch_size=10000):
     """
     Perform batch mean shift clustering on the input data.
@@ -160,7 +142,7 @@ def allocate_clusters_dbscan(df, data_preprocessed, eps=0.5, min_samples=5):
     df['cluster_dbscan'] = model.fit_predict(data_preprocessed)
 
 
-def allocate_clusters_meanshift(df, data_preprocessed, bandwidth):
+def allocate_clusters_meanshift(df, data_preprocessed, bandwidth, bin_seeding=True, min_bin_freq=10, cluster_all=True):
     """
     Allocates clusters to data points using the MeanShift algorithm.
 
@@ -172,5 +154,5 @@ def allocate_clusters_meanshift(df, data_preprocessed, bandwidth):
     Outputs:
     None
     """
-    model = MeanShift(bandwidth=bandwidth)
+    model = MeanShift(bandwidth=bandwidth, bin_seeding=bin_seeding, min_bin_freq=min_bin_freq, cluster_all=cluster_all)
     df['cluster_meanshift'] = model.fit_predict(data_preprocessed)

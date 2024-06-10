@@ -18,7 +18,7 @@ def association_rules_preproc(data_w_clusters:pd.DataFrame, encoded_purchases:pd
     - cluster_dfs (dict): Dict of cluster_label | Purchases filtered for that cluster
     '''
     filtered_data = data_w_clusters[data_w_clusters['customer_id'].isin(encoded_purchases['customer_id'])]
-    clusters = filtered_data['cluster_solution'].unique()
+    clusters = filtered_data['cluster_solution_name'].unique()
 
     encoded_purchases_with_cluster = encoded_purchases.reset_index().merge(filtered_data, on='customer_id', how='left')
     encoded_purchases_with_cluster.drop('customer_id', axis=1, inplace=True)
@@ -26,10 +26,11 @@ def association_rules_preproc(data_w_clusters:pd.DataFrame, encoded_purchases:pd
 
     clustered_baskets = dict()
     for cluster in clusters:
-      clustered_baskets[cluster] = encoded_purchases_with_cluster[encoded_purchases_with_cluster['cluster_solution'] == cluster]
+      clustered_baskets[cluster] = encoded_purchases_with_cluster[encoded_purchases_with_cluster['cluster_solution_name'] == cluster]
 
     for cluster in clusters:
-      clustered_baskets[cluster] = encoded_purchases_with_cluster[encoded_purchases_with_cluster['cluster_solution'] == cluster]
+      clustered_baskets[cluster] = encoded_purchases_with_cluster[encoded_purchases_with_cluster['cluster_solution_name'] == cluster]
+      clustered_baskets[cluster].drop(['cluster_solution_name'], axis=1, inplace=True)
       clustered_baskets[cluster].drop(['cluster_solution'], axis=1, inplace=True)
 
 
