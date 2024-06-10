@@ -6,7 +6,8 @@ from IPython.display import display
 
 def association_rules_preproc(data_w_clusters:pd.DataFrame, encoded_purchases:pd.DataFrame) -> dict:
     '''
-    Function that creates a dictionary of cluster information to apply association rules to
+    Function that creates a dictionary of cluster information to apply association rules to each cluster
+
     Inputs:
     - data_w_clusters (pd.Dataframe): Dataframe indexed by customer_id that includes the associated cluster
         We assume the cluster column is 'cluster_solution'
@@ -37,11 +38,12 @@ def association_rules_preproc(data_w_clusters:pd.DataFrame, encoded_purchases:pd
 def association_rules_apriori(purchases_dict:dict, index:int) -> pd.DataFrame:
     '''
     Function that applies Apriori association rules assuming min_support=0.05
+
     Inputs:
-    
     purchases_dict (dict): Dictionary of purchases per cluster
       Created by association_rules_preproc()
     index (int): Key to look for in the dict
+    
     Outputs:
     Prints the frequent items and rules created of that cluster
     Returns the dataframe of rules

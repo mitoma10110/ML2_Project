@@ -8,25 +8,23 @@ import geopandas as gpd
 
 
 def plot_population(data):
-    # Assuming cust_info contains latitude and longitude columns for Portugal
+    '''
+    Function to plot the population of Portugal
+
+    Inputs:
+    - data: DataFrame containing the data
+
+    Outputs:
+    - None, but a plot is shown
+    '''
     geometry = [Point(xy) for xy in zip(data['longitude'], data['latitude'])]
     gdf = gpd.GeoDataFrame(data, geometry=geometry)   
-
-    # Load low-resolution world map
     world = gpd.read_file(gpd.datasets.get_path('naturalearth_lowres'))
-
     # Filter to include only Portugal
     portugal = world[world['name'] == 'Portugal']
-
-    # Create a plot
     fig, ax = plt.subplots(figsize=(10, 6))
-
-    # Plot map of Portugal
     portugal.plot(ax=ax, color='lightblue') 
-
-    # Plot all points in Portugal
     gdf.plot(ax=ax, marker='o', color='red', markersize=15)
-
     # Set plot title and labels
     ax.set_title('Location of Customers in Portugal')
     ax.set_xlabel('Longitude')
@@ -40,6 +38,12 @@ def plot_population(data):
 def plot_elbow_graph(dispersion):
     '''
     Function to plot elbow graphs given a dispersion list
+
+    Inputs:
+    - dispersion: List of dispersion values
+
+    Outputs:
+    - None, but a plot is shown
     '''
     plt.figure(figsize=(10, 6))
     plt.plot(range(1, 20), dispersion, marker='o')
@@ -51,10 +55,12 @@ def plot_elbow_graph(dispersion):
 def plot_dendrogram(model, **kwargs):
     '''
     Create linkage matrix and then plot the dendrogram
-    Arguments: 
+
+    Inputs: 
     - model(HierarchicalClustering Model): hierarchical clustering model.
     - **kwargs
-    Returns:
+
+    Outputs:
     None, but dendrogram plot is produced.
     '''
     # create the counts of samples under each node
@@ -78,6 +84,17 @@ def plot_dendrogram(model, **kwargs):
 
 
 def plot_k_distance(X, k):
+    '''
+    Function to plot the k-distance graph
+
+    Inputs:
+    - X: DataFrame containing the data
+    - k: Number of neighbors to consider
+
+    Outputs:
+    - None, but a plot is shown
+    '''
+
     nbrs = NearestNeighbors(n_neighbors=k).fit(X)
     distances, indices = nbrs.kneighbors(X)
     distances = np.sort(distances[:, k-1], axis=0)
@@ -88,6 +105,15 @@ def plot_k_distance(X, k):
     plt.show()
 
 def plot_cluster_description(df):
+    '''
+    Function to plot the cluster description
+
+    Inputs:
+    - df: DataFrame containing the data
+
+    Outputs:
+    - None, but a plot is shown
+    '''
     df = df.select_dtypes(include=[np.number])
 
     # Plotting cluster description using only the modelling variables
@@ -112,5 +138,16 @@ def plot_cluster_description(df):
     plt.show()
 
 def plot_cluster_sizes(df, name_column):
+    '''
+    Function to plot the cluster sizes
+
+    Inputs:
+    - df: DataFrame containing the data
+    - name_column: Name of the column containing the cluster assignments
+    
+    Outputs:
+    - None, but a plot is shown
+    '''
+    
     df.groupby([name_column]).size().plot(kind='bar')
     plt.show()
