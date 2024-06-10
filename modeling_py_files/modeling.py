@@ -35,6 +35,14 @@ def create_agg_clusters(data, linkage='ward', distance_threshold=None, n_cluster
     agg_clust = model.fit(data)
     return agg_clust
 
+def batch_meanshift(X, bandwidth, batch_size=10000):
+    labels = np.empty(0)
+    for i in range(0, len(X), batch_size):
+        X_batch = X[i:i+batch_size]
+        mean_shift = MeanShift(bandwidth=bandwidth)
+        mean_shift.fit(X_batch)
+        labels = np.concatenate([labels, mean_shift.labels_])
+    return labels
 
 def allocate_clusters_kmeans(df, data_preprocessed, n_clusters=8, random_state=0):
     model = KMeans(n_clusters=n_clusters, random_state=random_state).fit(data_preprocessed)
